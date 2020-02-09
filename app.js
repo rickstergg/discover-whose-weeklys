@@ -13,9 +13,9 @@ var cors = require('cors');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 
-var client_id = CLIENT_ID; // Your client id
-var client_secret = CLIENT_SECRET; // Your secret
-var redirect_uri = CALLBACK_URI; // Your redirect uri, add if it doesn't exist already in app settings.
+var client_id = '0a0c39b210d94b8bab6e39d21e46ef7a'; // Your client id
+var client_secret = '0bb080fbe3d14d1d8f5e871ab950d457'; // Your secret
+var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri, add if it doesn't exist already in app settings.
 
 /**
  * Generates a random string containing numbers and letters
@@ -46,7 +46,14 @@ app.get('/login', function(req, res) {
   res.cookie(stateKey, state);
 
   // your application requests authorization
-  var scope = 'user-read-private user-read-email';
+  /*
+    getting a playlist: free!
+    playlist-modify-public:
+      to create a playlist for a user
+      also to add tracks to playlists
+   */
+
+  var scope = 'playlist-modify-public';
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
