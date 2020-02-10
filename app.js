@@ -8,7 +8,7 @@
  */
 
 var express = require('express'); // Express web server framework
-var request = require('request'); // "Request" library
+var request = require('request-promise'); // "Request" library
 var cors = require('cors');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
@@ -16,7 +16,14 @@ var cookieParser = require('cookie-parser');
 var client_id = '0a0c39b210d94b8bab6e39d21e46ef7a'; // Your client id
 var client_secret = '0bb080fbe3d14d1d8f5e871ab950d457'; // Your secret
 var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri, add if it doesn't exist already in app settings.
-const { createPlaylist } = require('./utils/api');
+const { createPlaylist, getAllSongsFromPlaylists, addSongsToPlaylist } = require('./utils/api');
+
+const playlistIds = [
+  '37i9dQZEVXcNbkdjqiBYAa',
+  '37i9dQZEVXcPAHESJrxEYO',
+  '37i9dQZEVXcPt6vVrR5lta',
+  '37i9dQZEVXcFM6piYkUYgR'
+];
 
 /**
  * Generates a random string containing numbers and letters
@@ -64,6 +71,7 @@ app.get('/callback', function(req, res) {
   var code = req.query.code || null;
   var state = req.query.state || null;
   var storedState = req.cookies ? req.cookies[stateKey] : null;
+  var accessToken, refreshToken, hostId, masterPlaylistId = null;
 
   if (state === null || state !== storedState) {
     res.redirect('/#' +
@@ -85,30 +93,32 @@ app.get('/callback', function(req, res) {
       json: true
     };
 
-    request.post(authOptions, function(error, response, body) {
-      if (!error && response.statusCode === 200) {
-        var accessToken = body.access_token,
-            refreshToken = body.refresh_token;
+    request.post(authOptions)
+      .then(({ access_token: access, refresh_token: refresh}) => {
+        accessToken = access;
+        refresh = refresh;
 
-        var options = {
+        var meOptions = {
           url: 'https://api.spotify.com/v1/me',
-          headers: { 'Authorization': 'Bearer ' + accessToken },
+          headers: { 'Authorization': 'Bearer ' + access },
           json: true
         };
-
-        request.get(options, function(error, response, body) {
-          // grab the host user's ID.
-          const hostId = body.id;
-          const playlistName = 'hello poppet';
-          const id = createPlaylist({ userId: hostId, playlistName, accessToken });
-        });
-      } else {
-        res.redirect('/' +
-          querystring.stringify({
-            error: 'invalid_token'
-          }));
-      }
-    });
+        return request.get(meOptions);
+      })
+      .then(({ id: userId }) => {
+        hostId = userId;
+        const playlistName = 'hello poppet';
+        return createPlaylist({ userId, playlistName, accessToken });
+      })
+      .then((resp) => {
+        const { id: playlistId } = JSON.parse(resp);
+        masterPlaylistId = playlistId;
+        return getAllSongsFromPlaylists({ playlistIds, numberOfSongs: 5, accessToken });
+      })
+      .then(songURIs => {
+        return addSongsToPlaylist({ playlistId: masterPlaylistId, songURIs, accessToken });
+      })
+      .catch(error => console.log(error));
   }
 });
 
