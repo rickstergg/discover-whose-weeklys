@@ -7,15 +7,15 @@
  * https://developer.spotify.com/web-api/authorization-guide/#authorization_code_flow
  */
 
-var express = require('express'); // Express web server framework
-var request = require('request-promise'); // "Request" library
-var cors = require('cors');
-var querystring = require('querystring');
-var cookieParser = require('cookie-parser');
+const express = require('express'); // Express web server framework
+const request = require('request-promise'); // "Request" library
+const cors = require('cors');
+const querystring = require('querystring');
+const cookieParser = require('cookie-parser');
 
-var client_id = '0a0c39b210d94b8bab6e39d21e46ef7a'; // Your client id
-var client_secret = '0bb080fbe3d14d1d8f5e871ab950d457'; // Your secret
-var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri, add if it doesn't exist already in app settings.
+const client_id = '0a0c39b210d94b8bab6e39d21e46ef7a'; // Your client id
+const client_secret = '0bb080fbe3d14d1d8f5e871ab950d457'; // Your secret
+const redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri, add if it doesn't exist already in app settings.
 const { createPlaylist, getAllSongsFromPlaylists, addSongsToPlaylist } = require('./utils/api');
 
 const playlistIds = [
@@ -30,31 +30,31 @@ const playlistIds = [
  * @param  {number} length The length of the string
  * @return {string} The generated string
  */
-var generateRandomString = function(length) {
-  var text = '';
-  var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const generateRandomString = function(length) {
+  let text = '';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-  for (var i = 0; i < length; i++) {
+  for (let i = 0; i < length; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
   return text;
 };
 
-var stateKey = 'spotify_auth_state';
+const stateKey = 'spotify_auth_state';
 
-var app = express();
+const app = express();
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname + '/public'))
-   .use(cors())
+app.set('view engine', 'pug');
+app.use(cors())
    .use(cookieParser());
 
 // Creates an internal state and redirects the user to prompt authentication and scope approvals.
-app.get('/login', function(req, res) {
-  var state = generateRandomString(16);
+app.get('/', function(req, res) {
+  const state = generateRandomString(16);
   res.cookie(stateKey, state);
 
-  var scope = 'playlist-modify-public playlist-modify-private';
+  const scope = 'playlist-modify-public playlist-modify-private';
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
@@ -68,10 +68,10 @@ app.get('/login', function(req, res) {
 // Spotify API comes back with valid tokens for me to use for the user's account.
 // These include fetching other discovery playlists, creating our own, and adding tracks to it.
 app.get('/callback', function(req, res) {
-  var code = req.query.code || null;
-  var state = req.query.state || null;
-  var storedState = req.cookies ? req.cookies[stateKey] : null;
-  var accessToken, refreshToken, hostId, masterPlaylistId = null;
+  const code = req.query.code || null;
+  const state = req.query.state || null;
+  const storedState = req.cookies ? req.cookies[stateKey] : null;
+  let accessToken, refreshToken, hostId, masterPlaylistId = null;
 
   if (state === null || state !== storedState) {
     res.redirect('/#' +
@@ -80,7 +80,7 @@ app.get('/callback', function(req, res) {
       }));
   } else {
     res.clearCookie(stateKey);
-    var authOptions = {
+    const authOptions = {
       url: 'https://accounts.spotify.com/api/token',
       form: {
         code: code,
@@ -98,7 +98,7 @@ app.get('/callback', function(req, res) {
         accessToken = access;
         refresh = refresh;
 
-        var meOptions = {
+        const meOptions = {
           url: 'https://api.spotify.com/v1/me',
           headers: { 'Authorization': 'Bearer ' + access },
           json: true
@@ -117,6 +117,9 @@ app.get('/callback', function(req, res) {
       })
       .then(songURIs => {
         return addSongsToPlaylist({ playlistId: masterPlaylistId, songURIs, accessToken });
+      })
+      .then(() => {
+        res.render('index');
       })
       .catch(error => console.log(error));
   }
