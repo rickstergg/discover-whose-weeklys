@@ -8,15 +8,7 @@ const client_id = '0a0c39b210d94b8bab6e39d21e46ef7a'; // Your client id
 const client_secret = '0bb080fbe3d14d1d8f5e871ab950d457'; // Your secret
 const redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri, add if it doesn't exist already in app settings.
 const { createPlaylist, getAllSongsFromPlaylists, addSongsToPlaylist } = require('./utils/api');
-const { getArtistsAndNames } = require('./utils/helpers');
-
-// We know whose is whose, so we can use these IDs to reverse link the songs coming back from the API
-const playlistIds = [
-  '37i9dQZEVXcNbkdjqiBYAa', // Rick
-  '37i9dQZEVXcPAHESJrxEYO', // Elisa
-  '37i9dQZEVXcPt6vVrR5lta', // Pango
-  '37i9dQZEVXcFM6piYkUYgR'  // Viv
-];
+const { getArtistsAndNames, playlistIdMap } = require('./utils/helpers');
 
 /**
  * Generates a random string containing numbers and letters
@@ -116,7 +108,7 @@ app.get('/construct', function(req, res) {
     .then((resp) => {
       const { id: playlistId } = JSON.parse(resp);
       masterPlaylistId = playlistId;
-      return getAllSongsFromPlaylists({ playlistIds, numberOfSongs: 5, accessToken });
+      return getAllSongsFromPlaylists({ playlistIds: Object.keys(playlistIdMap), numberOfSongs: 5, accessToken });
     })
     .then((resp) => {
       let songs = [], uris = [];

@@ -1,4 +1,5 @@
 var request = require('request-promise');
+const { playlistIdMap, lookUpOwner } = require('./helpers');
 
 const createPlaylist = ({ userId, playlistName, accessToken }) => {
   const data = {
@@ -29,10 +30,15 @@ const getSongs = ({ playlistId, numberOfSongs, accessToken }) => {
     },
   };
 
+  const owner = lookUpOwner(playlistId);
+
   return request(requestOptions)
     .then(resp => {
       const data = JSON.parse(resp);
       const songs = data.tracks.items.slice(0, numberOfSongs);
+      songs.forEach((song) => {
+        song.owner = owner;
+      });
       const uris = songs.map(t => t.track.uri);
       return { uris, songs };
     });
