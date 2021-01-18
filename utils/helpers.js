@@ -1,12 +1,10 @@
 const getArtistsAndNames = (songList) => {
-  const yolo = songList.map(song => {
+  return songList.map(({ track: { name, artists } }) => {
     return {
-      name: song.track,
-      artists: song.track.artists.map(artist => artist.name).join(', '),
+      name,
+      artists: artists.map(artist => artist.name).join(', '),
     };
   });
-
-  return yolo;
 }
 
 module.exports = {

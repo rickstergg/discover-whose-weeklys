@@ -44,7 +44,7 @@ const getAllSongsFromPlaylists = ({ playlistIds, numberOfSongs, accessToken }) =
 
 const addSongsToPlaylist = ({ playlistId, songURIs, accessToken }) => {
   const data = {
-    uris: [].concat.apply([], songURIs)
+    uris: songURIs
   };
 
   const requestOptions = {
