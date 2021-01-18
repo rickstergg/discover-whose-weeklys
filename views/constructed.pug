@@ -1,0 +1,12 @@
+doctype html
+html
+  head
+    title= "Done constructing the master playlist!!"
+  body
+    if error
+      h1 There was an error: #{error}
+    else
+      h1= "Here are the songs:"
+      ul
+        each val in songList
+          li= val.name + " by " + val.artists

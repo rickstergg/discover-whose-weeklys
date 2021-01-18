@@ -3,6 +3,13 @@ html
   head
     title= "Construct the master playlist!"
   body
-    h1= "Build the playlist!"
-    form(id="runform" action='/login')
-      button(type='submit') Authenticate and build!
+    if error
+      h1 There was an error: #{error}
+    else
+      h1= "Thank you for authenticating"
+      p Refresh Token: #{refreshToken}
+      p Access Token: #{accessToken}
+      form(id="build" action='/construct')
+        input(type="hidden", name="accessToken", value=accessToken)
+        input(type="hidden", name="refreshToken", value=refreshToken)
+        button(type='submit') Build the master playlist!

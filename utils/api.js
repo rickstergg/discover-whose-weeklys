@@ -30,7 +30,12 @@ const getSongs = ({ playlistId, numberOfSongs, accessToken }) => {
   };
 
   return request(requestOptions)
-    .then(resp => JSON.parse(resp).tracks.items.slice(0, numberOfSongs).map(t => t.track.uri));
+    .then(resp => {
+      const data = JSON.parse(resp);
+      const songs = data.tracks.items.slice(0, numberOfSongs);
+      const uris = songs.map(t => t.track.uri);
+      return { uris, songs };
+    });
 }
 
 const getAllSongsFromPlaylists = ({ playlistIds, numberOfSongs, accessToken }) => {

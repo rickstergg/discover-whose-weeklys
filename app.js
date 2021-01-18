@@ -1,12 +1,3 @@
-/**
- * This is an example of a basic node.js script that performs
- * the Authorization Code oAuth2 flow to authenticate against
- * the Spotify Accounts.
- *
- * For more information, read
- * https://developer.spotify.com/web-api/authorization-guide/#authorization_code_flow
- */
-
 const express = require('express'); // Express web server framework
 const request = require('request-promise'); // "Request" library
 const cors = require('cors');
@@ -17,12 +8,14 @@ const client_id = '0a0c39b210d94b8bab6e39d21e46ef7a'; // Your client id
 const client_secret = '0bb080fbe3d14d1d8f5e871ab950d457'; // Your secret
 const redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri, add if it doesn't exist already in app settings.
 const { createPlaylist, getAllSongsFromPlaylists, addSongsToPlaylist } = require('./utils/api');
+const { urlToPlaylistId } = require('./utils/helpers');
 
+// We know whose is whose, so we can use these IDs to reverse link the songs coming back from the API
 const playlistIds = [
-  '37i9dQZEVXcNbkdjqiBYAa',
-  '37i9dQZEVXcPAHESJrxEYO',
-  '37i9dQZEVXcPt6vVrR5lta',
-  '37i9dQZEVXcFM6piYkUYgR'
+  '37i9dQZEVXcNbkdjqiBYAa', // Rick
+  '37i9dQZEVXcPAHESJrxEYO', // Elisa
+  '37i9dQZEVXcPt6vVrR5lta', // Pango
+  '37i9dQZEVXcFM6piYkUYgR'  // Viv
 ];
 
 /**
@@ -71,7 +64,6 @@ app.get('/callback', function(req, res) {
   const code = req.query.code || null;
   const state = req.query.state || null;
   const storedState = req.cookies ? req.cookies[stateKey] : null;
-  let accessToken, refreshToken, hostId, masterPlaylistId = null;
 
   if (state === null || state !== storedState) {
     res.redirect('/#' +
@@ -94,35 +86,53 @@ app.get('/callback', function(req, res) {
     };
 
     request.post(authOptions)
-      .then(({ access_token: access, refresh_token: refresh}) => {
-        accessToken = access;
-        refresh = refresh;
-
-        const meOptions = {
-          url: 'https://api.spotify.com/v1/me',
-          headers: { 'Authorization': 'Bearer ' + access },
-          json: true
-        };
-        return request.get(meOptions);
+      .then(({ access_token: accessToken, refresh_token: refreshToken }) => {
+        res.render('index', { accessToken, refreshToken });
       })
-      .then(({ id: userId }) => {
-        hostId = userId;
-        const playlistName = 'hello poppet';
-        return createPlaylist({ userId, playlistName, accessToken });
-      })
-      .then((resp) => {
-        const { id: playlistId } = JSON.parse(resp);
-        masterPlaylistId = playlistId;
-        return getAllSongsFromPlaylists({ playlistIds, numberOfSongs: 5, accessToken });
-      })
-      .then(songURIs => {
-        return addSongsToPlaylist({ playlistId: masterPlaylistId, songURIs, accessToken });
-      })
-      .then(() => {
-        res.render('index');
-      })
-      .catch(error => console.log(error));
+      .catch(error => res.render('index', { error }));
   }
+});
+
+app.get('/construct', function(req, res) {
+  const accessToken = req.query.accessToken;
+  const refreshToken = req.query.refreshToken;
+  // const playlistIds = req.query.playlistIds; when it's ready
+
+  let hostId, masterPlaylistId, songList = null;
+  const MASTER_PLAYLIST_NAME = "hello poppet";
+
+  const meOptions = {
+    url: 'https://api.spotify.com/v1/me',
+    headers: { 'Authorization': 'Bearer ' + accessToken },
+    json: true
+  };
+
+  request.get(meOptions)
+    .then(({ id: userId }) => {
+      hostId = userId;
+      const playlistName = MASTER_PLAYLIST_NAME;
+      return createPlaylist({ userId, playlistName, accessToken });
+    })
+    .then((resp) => {
+      const { id: playlistId } = JSON.parse(resp);
+      masterPlaylistId = playlistId;
+      return getAllSongsFromPlaylists({ playlistIds, numberOfSongs: 5, accessToken });
+    })
+    .then((resp) => {
+      let songs = [], uris = [];
+      resp.map(playlist => {
+        songs.push(playlist.songs);
+        uris.push(playlist.uris);
+      });
+
+      // TODO: Shuffle the array before adding it to the masterPlaylistId
+      songList = songs;
+      return addSongsToPlaylist({ playlistId: masterPlaylistId, songURIs: uris, accessToken });
+    })
+    .then((resp) => {
+      res.render('constructed', { songList });
+    })
+    .catch(error => console.log(error));
 });
 
 console.log('Listening on 8888');
