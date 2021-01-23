@@ -8,7 +8,7 @@ const client_id = '0a0c39b210d94b8bab6e39d21e46ef7a'; // Your client id
 const client_secret = '0bb080fbe3d14d1d8f5e871ab950d457'; // Your secret
 const redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri, add if it doesn't exist already in app settings.
 const { createPlaylist, getAllSongsFromPlaylists, addSongsToPlaylist } = require('./utils/api');
-const { getArtistsAndNames, playlistIdMap } = require('./utils/helpers');
+const { getArtistsAndNames, playlistIdMap, shuffle } = require('./utils/helpers');
 
 /**
  * Generates a random string containing numbers and letters
@@ -33,6 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'pug');
 app.use(cors())
    .use(cookieParser());
+app.use(express.static(__dirname + '/public'));
 
 // Creates an internal state and redirects the user to prompt authentication and scope approvals.
 app.get('/', function(req, res) {
@@ -117,8 +118,7 @@ app.get('/construct', function(req, res) {
         uris = uris.concat(playlist.uris);
       });
 
-      // TODO: Shuffle the array before adding it to the masterPlaylistId
-      songList = songs;
+      songList = shuffle(songs);
       return addSongsToPlaylist({ playlistId: masterPlaylistId, songURIs: uris, accessToken });
     })
     .then((resp) => {

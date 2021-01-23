@@ -2,11 +2,21 @@ doctype html
 html
   head
     title= "Done constructing the master playlist!!"
+    link(rel="stylesheet", href="/styles/tables.css")
   body
     if error
       h1 There was an error: #{error}
     else
       h1= "Here are the songs:"
-      ul
-        each val in songList
-          li= val.name + " by " + val.artists + ' FOR ' + val.owner
+      table
+        thead
+          tr
+            th Song Name
+            th Artist(s)
+            th Whose is it?
+        tbody
+          each song in songList
+            tr
+              td= song.name
+              td= song.artists
+              td= song.owner
