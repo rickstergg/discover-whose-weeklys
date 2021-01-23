@@ -7,8 +7,8 @@ const cookieParser = require('cookie-parser');
 const client_id = '0a0c39b210d94b8bab6e39d21e46ef7a'; // Your client id
 const client_secret = '0bb080fbe3d14d1d8f5e871ab950d457'; // Your secret
 const redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri, add if it doesn't exist already in app settings.
-const { createPlaylist, getAllSongsFromPlaylists, addSongsToPlaylist } = require('./utils/api');
-const { getArtistsAndNames, playlistIdMap, shuffle } = require('./utils/helpers');
+const { createPlaylist, getAllSongsFromPlaylists, addSongsToPlaylist } = require('./js/utils/api');
+const { getArtistsAndNames, playlistIdMap, shuffle } = require('./js/utils/helpers');
 
 /**
  * Generates a random string containing numbers and letters

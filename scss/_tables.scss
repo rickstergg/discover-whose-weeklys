@@ -18,8 +18,13 @@ table {
   td, th {
     border: 1px solid $table-border;
 
+    div {
+      color: $link-blue;
+      text-decoration: underline;
+    }
+
     span.hidden {
-      visibility: hidden;
+      display: none;
     }
   }
 }

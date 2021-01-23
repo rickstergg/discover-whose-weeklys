@@ -1,0 +1,36 @@
+{
+  "name": "discover-whose",
+  "version": "1.0.0",
+  "description": "A game to locally play with (socially distant) friends",
+  "main": "app.js",
+  "dependencies": {
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "pug": "^2.0.4",
+    "querystring": "^0.2.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.5",
+    "sass": "^1.32.5"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10"
+  },
+  "scripts": {
+    "clean": "rm -rf public/css/* && rm -rf public/js/*",
+    "start": "npm run clean && npm run build && node app.js",
+    "build": "sass scss/index.scss:public/css/everything.css && babel js -d public/js",
+    "watch": "sass --watch scss/index.scss:public/css/everything.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rickstergg/discover-whose-weeklys.git"
+  },
+  "author": "Rick Zhang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rickstergg/discover-whose-weeklys/issues"
+  },
+  "homepage": "https://github.com/rickstergg/discover-whose-weeklys#readme"
+}
