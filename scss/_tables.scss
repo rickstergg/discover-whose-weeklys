@@ -1,0 +1,25 @@
+// _tables
+
+table {
+  border: 1px solid $table-border;
+  border-collapse: collapse;
+  text-align: center;
+  width: 100%;
+
+  th {
+    color: white;
+    background-color: $table-heading;
+  }
+
+  tr:hover {
+    background-color: $table-hover;
+  }
+
+  td, th {
+    border: 1px solid $table-border;
+
+    span.hidden {
+      visibility: hidden;
+    }
+  }
+}

@@ -2,7 +2,7 @@ doctype html
 html
   head
     title= "Done constructing the master playlist!!"
-    link(rel="stylesheet", href="/styles/tables.css")
+    link(rel="stylesheet", href="/css/everything.css")
   body
     if error
       h1 There was an error: #{error}
@@ -19,4 +19,5 @@ html
             tr
               td= song.name
               td= song.artists
-              td= song.owner
+              td
+                span.hidden= song.owner
