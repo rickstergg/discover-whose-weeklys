@@ -112,13 +112,13 @@ app.get('/construct', function(req, res) {
       return getAllSongsFromPlaylists({ playlistIds: Object.keys(playlistIdMap), numberOfSongs: 5, accessToken });
     })
     .then((resp) => {
-      let songs = [], uris = [];
+      let songs = [];
       resp.map(playlist => {
         songs = songs.concat(playlist.songs);
-        uris = uris.concat(playlist.uris);
       });
 
       songList = shuffle(songs);
+      const uris = songList.map(s => s.track.uri);
       return addSongsToPlaylist({ playlistId: masterPlaylistId, songURIs: uris, accessToken });
     })
     .then((resp) => {

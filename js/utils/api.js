@@ -39,8 +39,7 @@ const getSongs = ({ playlistId, numberOfSongs, accessToken }) => {
       songs.forEach((song) => {
         song.owner = owner;
       });
-      const uris = songs.map(t => t.track.uri);
-      return { uris, songs };
+      return { songs };
     });
 }
 
