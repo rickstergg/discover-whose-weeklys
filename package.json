@@ -4,18 +4,18 @@
   "description": "A game to locally play with (socially distant) friends",
   "main": "app.js",
   "dependencies": {
-    "cookie-parser": "^1.4.4",
+    "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "pug": "^2.0.4",
-    "querystring": "^0.2.0",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.5",
-    "sass": "^1.32.5"
+    "querystring": "^0.2.1",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6",
+    "sass": "^1.37.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.12.10",
-    "@babel/core": "^7.12.10"
+    "@babel/cli": "^7.14.8",
+    "@babel/core": "^7.14.8"
   },
   "scripts": {
     "clean": "rm -rf public/css/* && rm -rf public/js/*",
