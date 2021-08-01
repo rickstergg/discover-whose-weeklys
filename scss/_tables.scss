@@ -1,14 +1,22 @@
 // _tables
 
 table {
+  font-family: "Georama", sans-serif;
   border: 1px solid $table-border;
   border-collapse: collapse;
   text-align: center;
   width: 100%;
 
+  img {
+    width: 64px;
+    height: 64px;
+    margin: 15px;
+  }
+
   th {
-    color: white;
     background-color: $table-heading;
+    color: $header-color;
+    font-weight: bold;
   }
 
   tr:hover {

@@ -1,6 +1,7 @@
 const getArtistsAndNames = (songList) => {
-  return songList.map(({ owner, track: { name, artists } }) => {
+  return songList.map(({ image, owner, track: { name, artists } }) => {
     return {
+      image,
       name,
       artists: artists.map(artist => artist.name).join(', '),
       owner,

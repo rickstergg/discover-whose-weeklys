@@ -12,12 +12,15 @@ html
       table
         thead
           tr
+            th Album Art
             th Song Name
             th Artist(s)
             th Whose is it?
         tbody
           each song in songList
             tr
+              td
+                img(src=song.image)
               td= song.name
               td= song.artists
               td(onclick='showOwner(this)')

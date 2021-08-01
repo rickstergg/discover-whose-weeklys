@@ -38,6 +38,7 @@ const getSongs = ({ playlistId, numberOfSongs, accessToken }) => {
       const songs = data.tracks.items.slice(0, numberOfSongs);
       songs.forEach((song) => {
         song.owner = owner;
+        song.image = song.track.album.images[0].url;
       });
       return { songs };
     });

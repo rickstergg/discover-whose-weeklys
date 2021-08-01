@@ -20,7 +20,7 @@
   "scripts": {
     "clean": "rm -rf public/css/* && rm -rf public/js/*",
     "start": "npm run clean && npm run build && node app.js",
-    "build": "sass scss/index.scss:public/css/everything.css && babel js -d public/js",
+    "build": "sass scss/index.scss:public/css/everything.css && npx babel js -d public/js",
     "watch": "sass --watch scss/index.scss:public/css/everything.css"
   },
   "repository": {

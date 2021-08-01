@@ -5,6 +5,7 @@ html
   body
     if error
       h1 There was an error: #{error}
+      link(rel='stylesheet', href='https://fonts.googleapis.com/css?family=Georama')
     else
       h1= "Thank you for authenticating"
       p Refresh Token: #{refreshToken}
